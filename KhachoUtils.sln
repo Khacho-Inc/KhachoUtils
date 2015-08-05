@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhachoUtils", "KhachoUtils\KhachoUtils.csproj", "{77824125-EF00-4F3A-9F86-C1670EAED45C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhachoUtilsTests", "SimpleTest\KhachoUtilsTests.csproj", "{87E4D56A-13BB-436C-B7A8-955E4E89305C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{77824125-EF00-4F3A-9F86-C1670EAED45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77824125-EF00-4F3A-9F86-C1670EAED45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77824125-EF00-4F3A-9F86-C1670EAED45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77824125-EF00-4F3A-9F86-C1670EAED45C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87E4D56A-13BB-436C-B7A8-955E4E89305C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87E4D56A-13BB-436C-B7A8-955E4E89305C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87E4D56A-13BB-436C-B7A8-955E4E89305C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87E4D56A-13BB-436C-B7A8-955E4E89305C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
