@@ -1,11 +1,4 @@
-﻿/* Description
- * \file LogWPF.cs
- * \brief Класс, предоставляющий обработку логов для приложений на WPF.
- * \author Багдасарян Хачатур
- * \author Copyright (c) 2015 ПАО "Радиофизика"
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
