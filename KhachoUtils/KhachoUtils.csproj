@@ -44,7 +44,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LogWPF.cs" />
+    <Compile Include="AccessManager\AccessManager.cs" />
+    <Compile Include="AccessManager\IChangePasswordDialog.cs" />
+    <Compile Include="AccessManager\ILoginDialog.cs" />
+    <Compile Include="AccessManager\User.cs" />
+    <Compile Include="Logs\LogWPF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
