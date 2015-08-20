@@ -7,59 +7,15 @@ using System.Windows.Controls;
 
 namespace KhachoUtilsTests
 {
+	/// <summary>
+	/// Тесты к логу WPF.
+	/// </summary>
     [TestClass]
     public class LogWPFTests
 	{
-		[TestMethod]
-		public void KhachoUtils_LogWPF_Execute()
-		{
-			var lb = new ListBox();
-			var fileName = "c:\\test_KhachoUtils_LogWPF_Execute.txt";
-			if (File.Exists(fileName)) File.Delete(fileName);
-
-			try
-			{
-				var log = new LogWPF(lb, fileName);
-
-				var message = "simple message";
-				var messages = new List<string>(3);
-				messages.Add("complex message: row 1");
-				messages.Add("complex message: row 2");
-				messages.Add("complex message: row 3");
-
-				log.LogRecord(message);
-				log.LogRecord(messages);
-			}
-			catch (Exception excp)
-			{
-				Assert.Fail(excp.Message);
-			}
-			if (File.Exists(fileName)) File.Delete(fileName);
-		}
-
-
-        [TestMethod]
-        public void KhachoUtils_LogWPF_SimpleTest()
-        {
-			var fileName = "c:\\test_KhachoUtils_LogWPF_Simple.txt";
-			if (File.Exists(fileName) == true) File.Delete(fileName);
-            var log = new LogWPF(null, fileName);
-
-            log.LogRecord("c:\\test.txt");
-
-            log.LogRecord(new List<string>(2)
-            {
-                "",
-                "c:\\test.txt"
-            });
-
-			Assert.IsTrue(File.Exists(fileName), "тестовый файл не создан");
-			var contain = File.ReadAllLines(fileName);
-			Assert.AreEqual(contain.Length, 3, 0, "содержимое файла не совпадает с ожиданиями");
-
-			File.Delete(fileName);
-        }
-
+		/// <summary>
+		/// Проверяем работу конструкторов.
+		/// </summary>
 		[TestMethod]
 		public void KhachoUtils_LogWPF_Create()
 		{
@@ -103,5 +59,108 @@ namespace KhachoUtilsTests
 			}
 			if (File.Exists(fileName)) File.Delete(fileName);
 		}
-    }
+
+		/// <summary>
+		/// Проверяем работу функций добавления записей.
+		/// </summary>
+		[TestMethod]
+		public void KhachoUtils_LogWPF_Execute()
+		{
+			var lb = new ListBox();
+			var fileName = "c:\\test_KhachoUtils_LogWPF_Execute.txt";
+			if (File.Exists(fileName)) File.Delete(fileName);
+
+			try
+			{
+				var log = new LogWPF(lb, fileName);
+
+				var message = "simple message";
+				var messages = new List<string>(3);
+				messages.Add("complex message: row 1");
+				messages.Add("complex message: row 2");
+				messages.Add("complex message: row 3");
+
+				log.LogRecord(message);
+				log.LogRecord(messages);
+			}
+			catch (Exception excp)
+			{
+				Assert.Fail(excp.Message);
+			}
+			if (File.Exists(fileName)) File.Delete(fileName);
+		}
+
+		/// <summary>
+		/// Проверяем правильность работы с файлом логов.
+		/// </summary>
+		[TestMethod]
+        public void KhachoUtils_LogWPF_File()
+        {
+			var fileName = "c:\\test_KhachoUtils_LogWPF_Simple.txt";
+			if (File.Exists(fileName) == true) File.Delete(fileName);
+            var log = new LogWPF(null, fileName);
+
+            log.LogRecord("c:\\test.txt");
+
+            log.LogRecord(new List<string>(2)
+            {
+                "",
+                "c:\\test.txt"
+            });
+
+			Assert.IsTrue(File.Exists(fileName), "тестовый файл не создан");
+			var contain = File.ReadAllLines(fileName);
+			Assert.AreEqual(contain.Length, 3, 0, "содержимое файла не совпадает с ожиданиями");
+
+			File.Delete(fileName);
+        }
+
+		/// <summary>
+		/// Проверяем работу прокрутки визуального элемента, отображающего лог.
+		/// </summary>
+		[TestMethod]
+		public void KhachoUtils_LogWPF_Scrolling()
+		{
+			var lv = new ListView();
+			var log = new LogWPF(lv, null);
+
+			var testRecord = new List<string>(20)
+			{
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"11",
+				"12",
+				"13",
+				"14",
+				"15",
+				"16",
+				"17",
+				"18",
+				"19",
+				"20"
+			};
+			log.LogRecord(testRecord);
+
+			Assert.AreEqual(lv.Items.Count, testRecord.Count, 0, "визуальный элемент не отобразил все элементы записи");
+			var lastElement = lv.Items[lv.Items.Count - 1];
+			Assert.IsTrue(lv.SelectedItem.Equals(lastElement), "многострочная запись: выделен не последний элемент");
+			Assert.AreEqual(lv.SelectedItem as string, lv.Items[lv.Items.Count - 1] as string, false,
+																"многострочная запись: текст выделенного элемента не соответствует ожиданиям");
+
+			log.LogRecord("21");
+			
+			lastElement = lv.Items[lv.Items.Count - 1];
+			Assert.IsTrue(lv.SelectedItem.Equals(lastElement), "однострочная запись: выделен не последний элемент");
+			Assert.AreEqual(lv.SelectedItem as string, lv.Items[lv.Items.Count - 1] as string, false,
+																"однострочная запись: текст выделенного элемента не соответствует ожиданиям");
+		}
+	}
 }
