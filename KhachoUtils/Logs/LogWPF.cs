@@ -4,14 +4,17 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace KhachoUtils
 {
 	/// <summary>
 	/// Класс, логирующий действия программы.
 	/// </summary>
-	public class LogWPF : INotifyPropertyChanged
+	public class LogWPF : FrameworkElement, ILog
 	{
 		#region {EVENTS}
 
@@ -23,17 +26,26 @@ namespace KhachoUtils
 		#endregion
 
 
+		#region {DEPENDENCY_PROPERTIES}
+
+		/// <summary>
+		/// Локальное хранилище лога действий.
+		/// </summary>
+		public static DependencyProperty ActionLogProperty { get; set; }
+
+		#endregion
+
+
 		#region {PROPERTIES}
 
 		/// <summary>
 		/// Локальное хранилище лога действий.
 		/// </summary>
-		public ObservableCollection<string> ActionLog { get; set; }
-
-		/// <summary>
-		/// Возвращает признак необходиомсти отображения лога в визуальном компоненте.
-		/// </summary>
-		public bool ViewInForm { get; private set; }
+		public ObservableCollection<string> ActionLog
+		{
+			get { return (ObservableCollection<string>)base.GetValue(ActionLogProperty); }
+			set { base.SetValue(ActionLogProperty, value); }
+		}
 
 		/// <summary>
 		/// Возвращает признак необходимость записи лога в файл.
@@ -44,11 +56,6 @@ namespace KhachoUtils
 
 
 		#region {MEMBERS}
-
-		/// <summary>
-		/// Элемент главного окна, отображающий лог.
-		/// </summary>
-		ListBox viewer;
 
 		/// <summary>
 		/// Файл, хранящий лог.
@@ -71,30 +78,28 @@ namespace KhachoUtils
 		#region {CONSTRUCTOR}
 
 		/// <summary>
+		/// Статический конструктор.
+		/// </summary>
+		static LogWPF()
+		{
+			// регистрируем локальное хранилище лога действий
+			ActionLogProperty = DependencyProperty.Register("ActionLog", typeof(ObservableCollection<string>), typeof(LogWPF),
+				new UIPropertyMetadata(null, new PropertyChangedCallback(actionLogChanged)));
+		}
+
+		/// <summary>
 		/// Инициализирует экземпляр класса Log на основе заданных параметров.
 		/// </summary>
-		/// <param name="viewer">Элемента главного окна, отображающий лог.</param>
 		/// <param name="file">Файл, хранящий лог.</param>
-		public LogWPF(ListBox viewer, string file)
+		public LogWPF(string file)
 		{
 			// инициализируем список действий, производимых при добавлении записи в лог
 			logRecordActions = new List<Action<string>>();
 
-			if (viewer != null)
-			{
-				// сохраняем отображатель
-				this.viewer = viewer;
-				// инициализируем локальное хранилище лога
-				ActionLog = new ObservableCollection<string>();
-				// осуществляем привязку логов к контролам
-				this.viewer.DataContext = this;
-				this.viewer.ItemsSource = ActionLog;
-
-				// добавляем действие отображения новой записи на главной форме в список требуемых действий
-				logRecordActions.Add(viewLogInForm);
-				// возводим признак необходимости отображения лога
-				ViewInForm = true;
-			}
+			// инициализируем локальное хранилище лога
+			ActionLog = new ObservableCollection<string>();
+			// добавляем действие добавления (простите за тавтологию) новой записи в хранилище
+			logRecordActions.Add(addLogRecordToContainer);
 
 			if (string.IsNullOrEmpty(file) == false)
 			{
@@ -125,6 +130,19 @@ namespace KhachoUtils
 				// возводим признак необходимости внесения лога в файл
 				ReportInFile = true;
 			}
+		}
+
+		#endregion
+
+
+		#region {DEPENDENCY_PROPERTIES_METHODS}
+
+		private static void actionLogChanged(DependencyObject depObj, DependencyPropertyChangedEventArgs ea)
+		{
+			// извлекаем источник события
+			var log = depObj as LogWPF;
+			// генерируем событие изменения состава лога
+			log.onPropertyChanged("ActionLog");
 		}
 
 		#endregion
@@ -170,8 +188,7 @@ namespace KhachoUtils
 			// если хранилище лога существует, то очищаем его
 			if (ActionLog != null)
 			{
-				viewer.Dispatcher.Invoke(() => { ActionLog.Clear(); });
-				onPropertyChanged("ActionLog");
+				ActionLog.Clear();
 			}
 		}
 
@@ -195,28 +212,18 @@ namespace KhachoUtils
 		}
 
 		/// <summary>
-		/// Отображает изменения лога на главной форме.
+		/// Добавляет новуб запись в хранилище логов.
 		/// </summary>
-		/// <param name="newRecord">Новая запись в логе.</param>
-		private void viewLogInForm(string newRecord)
+		/// <param name="newRecord">Новая запись.</param>
+		private void addLogRecordToContainer(string newRecord)
 		{
-			viewer.Dispatcher.Invoke(() =>
+			base.Dispatcher.Invoke(delegate
 			{
 				// вносим запись в локальное хранилище
 				ActionLog.Add(newRecord);
 				// удаляем 10 записей из лога, если в логе более 1000 записей
 				if (ActionLog.Count > 1000) for (int i = 0; i > 100; i++) ActionLog.RemoveAt(0);
-				// выделяем последний элемент и прокручиваем в конец список событий
-				try
-				{
-					var lastItem = viewer.Items[viewer.Items.Count - 1];
-					viewer.ScrollIntoView(lastItem);
-					viewer.SelectedItem = lastItem;
-				}
-				catch { }
-                // сообщаем об изменении состава лога
-                onPropertyChanged("ActionLog");
-            });
+			});
 		}
 
 		/// <summary>

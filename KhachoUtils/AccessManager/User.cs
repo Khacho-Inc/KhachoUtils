@@ -92,15 +92,5 @@
 		}
 
 		#endregion
-
-
-		#region {ABSTRACT_METHODS}
-
-		/// <summary>
-		/// Проводит настройку программы, в соответствие с правами текущего пользователя.
-		/// </summary>
-		public abstract void ConfigureAccess();
-
-		#endregion
 	}
 }

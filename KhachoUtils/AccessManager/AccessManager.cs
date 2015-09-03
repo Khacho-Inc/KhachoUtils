@@ -84,63 +84,12 @@ namespace KhachoUtils.AccessManager
 		}
 
 		/// <summary>
-		/// Ведет диалог с пользователем, запрашивая у него данные аутентификации, посредством переданного окна.
+		/// Возвращает авторизованного пользователя или null, если его нет.
 		/// </summary>
-		/// <param name="window">Окно, ведущее диалог с пользователем.</param>
-		public void ShowDialog(ILoginDialog window)
+		/// <returns>Авторизованный пользователь или null, если авторизованного пользователя нет.</returns>
+		public User GetCurrentUser()
 		{
-			// подписываемся на событие принятия данных
-			window.LoginDataAccepted += Window_LoginDataAccepted;
-			// начинаем диалог
-			window.ShowDialog();
-		}
-
-		/// <summary>
-		/// Производит настройку программы в соответствии с правами текущего пользователя.
-		/// </summary>
-		public void ConfigureAccess()
-		{
-			// проверяем наличие аутентифицированного пользователя
-			if (HasAuthenticatedUser)
-				// проводим настройку программы
-				currentUser.ConfigureAccess();
-		}
-
-		/// <summary>
-		/// Записывает в переданные параметры имя пользователя и пароль, если имеется авторизованный пользователь. В противном случаем возвращает пустые строки.
-		/// </summary>
-		/// <param name="userName">Параметр, в который будет записано имя пользователя.</param>
-		/// <param name="password">Параметр, в который будет записан пароль.</param>
-		public void SaveCurrentData(out string userName, out string password)
-		{
-			// проверяем наличие авторизованного пользователя
-			if (HasAuthenticatedUser)
-			{
-				// возвращаем имя и пароль авторизоавнного пользователя
-				userName = currentUser.GetName();
-				password = currentUser.GetPassword();
-			}
-			else
-			{
-				// возвращаем пустые данные
-				userName = string.Empty;
-				password = string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// Возвращает описание авторизованного пользователя или пустую строку, если авторизованного пользователя нет.
-		/// </summary>
-		/// <returns>Описание авторизованного пользователя или пустая строка.</returns>
-		public string GetCurrentUserDescription()
-		{
-			// проверяем наличие авторизованного пользователя
-			if (HasAuthenticatedUser)
-				// возвращаем описание
-				return currentUser.Description;
-			else
-				// возвращаем пустую строку
-				return string.Empty;
+			return currentUser;
 		}
 
 		/// <summary>
@@ -150,68 +99,6 @@ namespace KhachoUtils.AccessManager
 		{
 			// сбрасываем текущего пользователя
 			currentUser = null;
-		}
-
-		/// <summary>
-		/// Ведет диалог с пользователем по смене пароля на текущего пользователя.
-		/// </summary>
-		/// <param name="window">Окно, ведущее диалог с пользователем.</param>
-		public void ChangePassword(IChangePasswordDialog window)
-		{
-			// проверяем наличие авторизованного пользователя
-			if (HasAuthenticatedUser == false) return;
-
-			// подписываемся на событие принятия данных
-			window.NewLoginDataAccepted += Window_NewLoginDataAccepted;
-			// начинаем диалог, передавая в него имя текущего пользователя
-			window.ShowDialog(currentUser.GetName());
-		}
-
-		#endregion
-
-
-		#region {EVENT_METHODS}
-
-		private void Window_LoginDataAccepted(object sender, LoginDialogEventArgs ea)
-		{
-			// извлекаем окно
-			var window = sender as ILoginDialog;
-			// проверяем правильность введенных данных
-			if (login(ea.UserName, ea.Password) == true)
-			{
-				// отписываемся от события
-				window.LoginDataAccepted -= Window_LoginDataAccepted;
-				// выставляем результат диалога
-				window.DialogResult = true;
-				// закрываем окно
-				window.Close();
-			}
-			else
-			{
-				// оповещаем пользователя об ошибке аутентификации
-				window.ShowError();
-			}
-		}
-
-		private void Window_NewLoginDataAccepted(object sender, ChangePasswordDialogEventArgs ea)
-		{
-			// извлекаем окно
-			var window = sender as IChangePasswordDialog;
-			// проверяем правильность введенных данных
-			if (login(ea.UserName, ea.Password) == true)
-			{
-				// отписываемся от события
-				window.NewLoginDataAccepted -= Window_NewLoginDataAccepted;
-				// закрываем окно
-				window.Close();
-				// меняем пароль пользователю
-				currentUser.SetNewPassword(ea.NewPassword);
-			}
-			else
-			{
-				// оповещаем пользователя об ошибке аутентификации
-				window.ShowError();
-			}
 		}
 
 		#endregion

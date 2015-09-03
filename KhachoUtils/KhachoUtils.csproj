@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\KhachoUtils.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -45,9 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessManager\AccessManager.cs" />
-    <Compile Include="AccessManager\IChangePasswordDialog.cs" />
-    <Compile Include="AccessManager\ILoginDialog.cs" />
     <Compile Include="AccessManager\User.cs" />
+    <Compile Include="Logs\ILog.cs" />
     <Compile Include="Logs\LogWPF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
